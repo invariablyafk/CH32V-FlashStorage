@@ -1,0 +1,7 @@
+flash_storage_main.bin
+flash_storage_main.elf
+flash_storage_main.hex
+flash_storage_main.lst
+flash_storage_main.map
+.DS_Store
+.vs_code
