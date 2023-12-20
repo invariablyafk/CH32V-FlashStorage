@@ -31,8 +31,6 @@ This code utilizes the ch32v003fun project for unlocking the raw power of this m
   3. Write to option bytes with `flash_write_option_bytes_16_bits()`. This internally erases them and restores other values.
   4. Lock the flash again with `flash_lock()`.
 
-Need to find the right spot in your main flash for your variables? Use `flash_calculate_runtime_address(n)` to work it out. More details, address calculations, and usage instructions in `ch32v003_flash.h`.
-
 Need to find the right spot in your main flash for your variables? Use `flash_calculate_nonvolatile_addr(n)` to work it out. More details, address calculations and usage instructions in `ch32v003_flash.h`.
 
 ## Compile-Time vs. Runtime Addresses
