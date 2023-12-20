@@ -88,9 +88,9 @@ int main()
 		GPIOC->BSHR = (1<<(16+0)); // Set pin C4 low (LED on).
 
 		#ifdef USE_COMPILE_TIME_ADDRESSES
-			valueInFlash = flash_get_16(NONVLOATILE_VAR_ADDR); // Read a 16-bit value from flash memory at the predefined address.
+			valueInFlash = flash_read_16_bits(NONVLOATILE_VAR_ADDR); // Read a 16-bit value from flash memory at the predefined address.
 		#else
-			valueInFlash = flash_get_16(nonvolatile_var_addr); // Read a 16-bit value from flash memory at the runtime determined address.
+			valueInFlash = flash_read_16_bits(nonvolatile_var_addr); // Read a 16-bit value from flash memory at the runtime determined address.
 		#endif
 		
 		printf("   Saved value is %u\r\n", valueInFlash);
@@ -117,9 +117,9 @@ int main()
 		// This erases a 64-byte page in the flash memory.
 		// Note: smaller erases are not possible on the CH32V003.
 		#ifdef USE_COMPILE_TIME_ADDRESSES
-			flash_erase_64b(NONVOLATILE_START_ADDR); // Erase a 64-bit block of flash memory at the predefined start address.
+			flash_erase_page(NONVOLATILE_START_ADDR); // Erase a 64-bit block of flash memory at the predefined start address.
 		#else
-			flash_erase_64b(nonvolatile_start_addr); // Erase a 64-bit block of flash memory at the runtime determined start address.
+			flash_erase_page(nonvolatile_start_addr); // Erase a 64-bit block of flash memory at the runtime determined start address.
 		#endif
 		printf("Memory erased\r\n");
 

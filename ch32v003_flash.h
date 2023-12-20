@@ -23,7 +23,6 @@
  * Ensure that you define SYSTEM_CORE_CLOCK with a value before including this library.
  * During the boot phase, call flash_set_latency() once.
  *
- * Functions without "OB" in the name concern the main flash and can be used to alter it.
  * Read operations (getter functions) can be performed at any time and do not require unlocking.
  *
  * To alter the main flash, follow these steps:
@@ -52,7 +51,7 @@
  * For example:
  * \f$ \text{nonvolatile}[15] = 0x08000000 + 16320 + 1 + 15 \f$
  *
- * The function flash_calculate_nonvolatile_addr(n) performs this calculation.
+ * The function flash_calculate_runtime_address(n) performs this calculation.
  *
  * @note It is suggested to calculate all non-volatile storage addresses at the beginning of the main and store them in variables.
  * Alternatively, use the FLASH_PRECALCULATE_NONVOLATILE_ADDR(n) preprocessor macro to define your addresses, allowing the math to be done at compile time.
@@ -70,7 +69,7 @@
  * @param byte_number The offset byte number from the start of nonvolatile storage.
  * @return uint32_t The calculated address for the specified nonvolatile byte.
  */
-static inline uint32_t flash_calculate_nonvolatile_addr(uint16_t byte_number);
+static inline uint32_t flash_calculate_runtime_address(uint16_t byte_number);
 /**
  * @brief Set the flash controller latency.
  *
@@ -90,7 +89,7 @@ static inline void flash_unlock();
  * This function unlocks the option bytes to allow modifications. 
  * It should be used in conjunction with flash_unlock() when modifying option bytes.
  */
-static inline void flash_OB_unlock();
+static inline void flash_unlock_option_bytes();
 /**
  * @brief Lock the flash after modifications.
  *
@@ -104,7 +103,7 @@ static inline void flash_lock();
  * 
  * @param start_addr The start address of the page to be erased.
  */
-static inline void flash_erase_64b(uint32_t start_addr);
+static inline void flash_erase_page(uint32_t start_addr);
 /**
  * @brief Program 16 bits of data into flash memory.
  *
@@ -125,7 +124,7 @@ static inline void flash_program_16(uint32_t addr, uint16_t data);
  * @param byte1 The first 8-bit value to be programmed.
  * @param byte0 The second 8-bit value to be programmed.
  */
-static inline void flash_program_2x8(uint32_t addr, uint8_t byte1, uint8_t byte0);
+static inline void flash_program_2x8_bits(uint32_t addr, uint8_t byte1, uint8_t byte0);
 /**
  * @brief Program a float value into flash memory.
  *
@@ -134,7 +133,7 @@ static inline void flash_program_2x8(uint32_t addr, uint8_t byte1, uint8_t byte0
  * @param addr The address where the float value will be programmed.
  * @param value The float value to be programmed.
  */
-static inline void flash_program_float(uint32_t addr, float value);
+static inline void flash_program_float_value(uint32_t addr, float value);
 /**
  * @brief Read 16 bits of data from flash memory.
  *
@@ -143,7 +142,7 @@ static inline void flash_program_float(uint32_t addr, float value);
  * @param addr The address from which the data will be read.
  * @return uint16_t The 16-bit data read from the specified address.
  */
-static inline uint16_t flash_get_16(uint32_t addr);
+static inline uint16_t flash_read_16_bits(uint32_t addr);
 /**
  * @brief Read an 8-bit value from flash memory.
  *
@@ -152,7 +151,7 @@ static inline uint16_t flash_get_16(uint32_t addr);
  * @param addr The address from which the data will be read.
  * @return uint8_t The 8-bit data read from the specified address.
  */
-static inline uint8_t flash_get_8(uint32_t addr);
+static inline uint8_t flash_read_8_bits(uint32_t addr);
 /**
  * @brief Read a float value from flash memory.
  *
@@ -161,7 +160,7 @@ static inline uint8_t flash_get_8(uint32_t addr);
  * @param addr The address from which the float value will be read.
  * @return float The float value read from the specified address.
  */
-static inline float flash_get_float(uint32_t addr);
+static inline float flash_read_float_value(uint32_t addr);
 /**
  * @brief Write 16 bits of data to the option bytes.
  *
@@ -170,17 +169,17 @@ static inline float flash_get_float(uint32_t addr);
  *
  * @param data The 16-bit data to be written to the option bytes.
  */
-static inline void flash_OB_write_data_16(uint16_t data);
+static inline void flash_write_option_byte_16_bits(uint16_t data);
 /**
  * @brief Write two 8-bit values to the option bytes.
  *
  * This function writes two 8-bit values to the option bytes. 
- * It utilizes the flash_OB_write_data_16 function for the actual writing.
+ * It utilizes the flash_write_option_byte_16_bits function for the actual writing.
  *
  * @param data1 The first 8-bit value to be written.
  * @param data0 The second 8-bit value to be written.
  */
-static inline void flash_OB_write_data_2x8(uint8_t data1, uint8_t data0);
+static inline void flash_write_option_byte_2x8_bits(uint8_t data1, uint8_t data0);
 /**
  * @brief Read the USER option byte.
  *
@@ -188,7 +187,7 @@ static inline void flash_OB_write_data_2x8(uint8_t data1, uint8_t data0);
  *
  * @return uint8_t The USER option byte value.
  */
-static inline uint8_t flash_OB_get_USER();
+static inline uint8_t flash_read_option_byte_USER();
 /**
  * @brief Read the RDPR option byte.
  *
@@ -196,7 +195,7 @@ static inline uint8_t flash_OB_get_USER();
  *
  * @return uint8_t The RDPR option byte value.
  */
-static inline uint8_t flash_OB_get_RDPR();
+static inline uint8_t flash_read_option_byte_RDPR();
 /**
  * @brief Read the WRPR1 option byte.
  *
@@ -204,7 +203,7 @@ static inline uint8_t flash_OB_get_RDPR();
  *
  * @return uint8_t The WRPR1 option byte value.
  */
-static inline uint8_t flash_OB_get_WRPR1();
+static inline uint8_t flash_read_option_byte_WRPR1();
 /**
  * @brief Read the WRPR0 option byte.
  *
@@ -212,7 +211,7 @@ static inline uint8_t flash_OB_get_WRPR1();
  *
  * @return uint8_t The WRPR0 option byte value.
  */
-static inline uint8_t flash_OB_get_WRPR0();
+static inline uint8_t flash_read_option_byte_WRPR0();
 /**
  * @brief Read the DATA1 option byte.
  *
@@ -220,7 +219,7 @@ static inline uint8_t flash_OB_get_WRPR0();
  *
  * @return uint8_t The DATA1 option byte value.
  */
-static inline uint8_t flash_OB_get_DATA1();
+static inline uint8_t flash_read_option_byte_DATA1();
 /**
  * @brief Read the DATA0 option byte.
  *
@@ -228,7 +227,7 @@ static inline uint8_t flash_OB_get_DATA1();
  *
  * @return uint8_t The DATA0 option byte value.
  */
-static inline uint8_t flash_OB_get_DATA0();
+static inline uint8_t flash_read_option_byte_DATA0();
 /**
  * @brief Read both DATA1 and DATA0 option bytes as a 16-bit value.
  *
@@ -236,7 +235,7 @@ static inline uint8_t flash_OB_get_DATA0();
  *
  * @return uint16_t The combined 16-bit value of DATA1 and DATA0 option bytes.
  */
-static inline uint16_t flash_OB_get_DATA_16();
+static inline uint16_t flash_read_option_byte_DATA_16();
 // Internal Function Declarations
 /**
  * @brief Check if the flash is currently busy.
@@ -247,7 +246,7 @@ static inline uint16_t flash_OB_get_DATA_16();
  */
 static inline uint8_t flash_is_busy();
 /**
- * @brief Check if the last flash operation is completed.
+ * @brief Check if the last flash operation has completed.
  *
  * This function checks the status of the last flash operation, specifically if it has been completed.
  *
@@ -318,7 +317,7 @@ union uint16t_2xuint8t {
 	#error "SYSTEM_CORE_CLOCK is not defined. Please define it in your .c before you #include ch32v003_flash.h."
 #endif
 // Function Definitions
-static inline uint32_t flash_calculate_nonvolatile_addr(uint16_t byte_number) {
+static inline uint32_t flash_calculate_runtime_address(uint16_t byte_number) {
     // Calculate the non-volatile storage address by adding the base address of the flash,
     // the override length (to account for any offsets), and the specific byte number requested.
     return (FLASH_BASE + (uint16_t)(uintptr_t)FLASH_LENGTH_OVERRIDE + byte_number);
@@ -339,7 +338,7 @@ static inline void flash_unlock() {
     // Write the second key to completely unlock the flash.
     FLASH->KEYR = FLASH_KEY2;
 }
-static inline void flash_OB_unlock() {
+static inline void flash_unlock_option_bytes() {
     // Write the first key to the option bytes key register for unlocking.
     FLASH->OBKEYR = FLASH_KEY1;
     // Write the second key to completely unlock the option bytes.
@@ -349,7 +348,7 @@ static inline void flash_lock() {
     // Set the lock bit in the flash control register to lock the flash.
     FLASH->CTLR |= FLASH_CTLR_LOCK;
 }
-static inline void flash_erase_64b(uint32_t start_addr) {
+static inline void flash_erase_page(uint32_t start_addr) {
     // Check if the flash is locked.
     if(FLASH->CTLR & FLASH_CTLR_LOCK) {
         // If locked, exit the function.
@@ -385,11 +384,11 @@ static inline void flash_program_16(uint32_t addr, uint16_t data) {
     // Reset the PG bit to disable flash programming.
     FLASH->CTLR &= CR_PG_Reset;
 }
-static inline void flash_program_2x8(uint32_t addr, uint8_t byte1, uint8_t byte0) {
+static inline void flash_program_2x8_bits(uint32_t addr, uint8_t byte1, uint8_t byte0) {
     // Combines two 8-bit values into a 16-bit value and programs it into flash at the specified address.
     flash_program_16(addr, (byte1 << 8) + byte0);
 }
-static inline void flash_program_float(uint32_t addr, float value) {
+static inline void flash_program_float_value(uint32_t addr, float value) {
     // A union is used to manipulate the float value as two 16-bit integers.
     union float_2xuint16t conv;
     conv.f = value; // Store the float value in the union.
@@ -398,15 +397,15 @@ static inline void flash_program_float(uint32_t addr, float value) {
     // Program the second 16 bits of the float.
     flash_program_16(addr + 2, conv.u16[1]);
 }
-static inline uint16_t flash_get_16(uint32_t addr) {
+static inline uint16_t flash_read_16_bits(uint32_t addr) {
     // Returns a 16-bit value from the specified flash memory address.
     return *(uint16_t*)(uintptr_t)addr;
 }
-static inline uint8_t flash_get_8(uint32_t addr) {
+static inline uint8_t flash_read_8_bits(uint32_t addr) {
     // Returns an 8-bit value from the specified flash memory address.
     return *(uint8_t*)(uintptr_t)addr;
 }
-static inline float flash_get_float(uint32_t addr) {
+static inline float flash_read_float_value(uint32_t addr) {
     // A union is used for reading a float value as two 16-bit integers.
     union float_2xuint16t conv;
     // Read the first 16 bits of the float.
@@ -416,7 +415,7 @@ static inline float flash_get_float(uint32_t addr) {
     // Return the combined float value.
     return conv.f;
 }
-static inline void flash_OB_write_data_16(uint16_t data) {
+static inline void flash_write_option_byte_16_bits(uint16_t data) {
     // Wait until the flash is not busy before starting any operation.
     flash_wait_until_not_busy();
     // Backup current option bytes data.
@@ -449,29 +448,29 @@ static inline void flash_OB_write_data_16(uint16_t data) {
     // Disable option byte programming.
     FLASH->CTLR &= CR_OPTPG_Reset;
 }
-static inline void flash_OB_write_data_2x8(uint8_t data1, uint8_t data0) {
-	flash_OB_write_data_16((data1<<8)+data0);
+static inline void flash_write_option_byte_2x8_bits(uint8_t data1, uint8_t data0) {
+	flash_write_option_byte_16_bits((data1<<8)+data0);
 }
-static inline uint8_t flash_OB_get_USER() {
+static inline uint8_t flash_read_option_byte_USER() {
 	return flash_dechecksum(OB->USER);
 }
-static inline uint8_t flash_OB_get_RDPR() {
+static inline uint8_t flash_read_option_byte_RDPR() {
 	return flash_dechecksum(OB->RDPR);
 }
-static inline uint8_t flash_OB_get_WRPR1() {
+static inline uint8_t flash_read_option_byte_WRPR1() {
 	return flash_dechecksum(OB->WRPR1);
 }
-static inline uint8_t flash_OB_get_WRPR0() {
+static inline uint8_t flash_read_option_byte_WRPR0() {
 	return flash_dechecksum(OB->WRPR0);
 }
-static inline uint8_t flash_OB_get_DATA1() {
+static inline uint8_t flash_read_option_byte_DATA1() {
 	return flash_dechecksum(OB->Data1);
 }
-static inline uint8_t flash_OB_get_DATA0() {
+static inline uint8_t flash_read_option_byte_DATA0() {
 	return flash_dechecksum(OB->Data0);
 }
-static inline uint16_t flash_OB_get_DATA_16() {
-	return (flash_OB_get_DATA1()<<8)+flash_OB_get_DATA0();
+static inline uint16_t flash_read_option_byte_DATA_16() {
+	return (flash_read_option_byte_DATA1()<<8)+flash_read_option_byte_DATA0();
 }
 // Internal Function Definitions.
 static inline uint8_t flash_is_busy() {
