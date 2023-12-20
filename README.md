@@ -4,6 +4,9 @@ Tired of losing those precious user config settings every time the power blinks?
 
 This library lets you tame the flash memory in your CH32V003 microcontroller. It's like a digital safe for your non-volatile settings, but remember, this safe has a limited number of uses (10,000 to be exact). For heavy-duty use, consider getting an external flash chip for added durability.
 
+![Abstract illustration of microcontrollers](img/illustration.png)
+
+
 ## About CH32V003
 
 Your trusty cheap CH32V003 microcontroller comes with a 16K flash memory, and we can set aside a portion of it to store data that pops up during runtime, like calibration values or your favorite user settings.
