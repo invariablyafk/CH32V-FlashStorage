@@ -19,8 +19,6 @@
  * 
  */
 #include <stdint.h>
-#define SYSTEM_CORE_CLOCK 48000000
-#define APB_CLOCK SYSTEM_CORE_CLOCK
 
 // Include the ch32v003fun header file for CH32V003 hardware
 #include "../ch32v003fun/ch32v003fun/ch32v003fun.h" 
@@ -53,10 +51,11 @@ int main()
 {
 	SystemInit(); // Initialize the system hardware.
 
-	printf("Starting..");
+	printf("Starting..\r\n");
+
 	Delay_Ms(3000); // Delay for 3000 milliseconds (3 seconds).
 
-	printf("\r\non-volatile storage testing\r\n");
+	printf("Non-volatile storage testing\r\n");
 
 	// Enable GPIOs for LED blinking on pin C4
 	RCC->APB2PCENR |=  RCC_APB2Periph_GPIOC;

@@ -20,7 +20,6 @@
  * To store variables in the main flash, reserve one or more pages at the end of the main flash for storing non-volatile variables.
  * Follow the provided guidelines in overrides.ld and your Makefile to set the flash length.
  *
- * Ensure that you define SYSTEM_CORE_CLOCK with a value before including this library.
  * During the boot phase, call flash_set_latency() once.
  *
  * Read operations (getter functions) can be performed at any time and do not require unlocking.
@@ -73,7 +72,7 @@ static inline uint32_t flash_calculate_runtime_address(uint16_t byte_number);
 /**
  * @brief Set the flash controller latency.
  *
- * This function sets the flash controller latency in accordance with the SYSTEM_CORE_CLOCK speed. 
+ * This function sets the flash controller latency in accordance with the FUNCONF_SYSTEM_CORE_CLOCK speed. 
  * It should be called during the boot phase.
  */
 static inline void flash_set_latency();
@@ -312,10 +311,6 @@ union uint16t_2xuint8t {
 #define FLASH_VOLATILE_CAPACITY (FLASH_BASE-FLASH_LENGTH_OVERRIDE)
 // use this to define main flash nonvolatile addresses at compile time!
 #define FLASH_PRECALCULATE_NONVOLATILE_ADDR(n) FLASH_BASE+(uint32_t)(uintptr_t)(FLASH_LENGTH_OVERRIDE)+n 
-// Check SYSTEM_CORE_CLOCK #define requirements are met
-#ifndef SYSTEM_CORE_CLOCK
-	#error "SYSTEM_CORE_CLOCK is not defined. Please define it in your .c before you #include ch32v003_flash.h."
-#endif
 // Function Definitions
 static inline uint32_t flash_calculate_runtime_address(uint16_t byte_number) {
     // Calculate the non-volatile storage address by adding the base address of the flash,
@@ -324,7 +319,7 @@ static inline uint32_t flash_calculate_runtime_address(uint16_t byte_number) {
 }
 static inline void flash_set_latency() {
     // Check if the system core clock speed is less than or equal to 24 MHz.
-    #if SYSTEM_CORE_CLOCK <= 24000000
+    #if FUNCONF_SYSTEM_CORE_CLOCK <= 24000000
         // If yes, set the flash latency to zero wait states.
         FLASH->ACTLR = FLASH_Latency_0;
     #else
